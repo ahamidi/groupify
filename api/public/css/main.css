@@ -14,6 +14,13 @@ th.artist_column {
   font-size: 160%;
 }
 
+.login-notice {
+  margin-top: 1.0em;
+}
+
+.login-notice button:hover, .login-notice button a:hover {
+  color: #fff;
+}
 
 .now-playing .container {
   position: relative;

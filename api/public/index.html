@@ -90,6 +90,15 @@
     </div>
   </div>
 
+  <div class="login-notice row" ng-hide="loggedIn">
+    <button type="button" class="btn btn-default btn-lg col-md-8 col-md-offset-2">
+      <span class="glyphicon glyphicon-headphones"></span>
+      <a href="/api/v1/auth">
+        hey beautiful! to queue up some songs, log in via GitHub
+      </a>
+    </button>
+
+  </div>
   <div class="search-box row" ng-show="loggedIn">
     <div class="col-md-10 col-md-offset-1">
     <h2>Queue a new song:</h2>
