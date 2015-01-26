@@ -25,16 +25,15 @@ th.artist_column {
 .now-playing .container {
   position: relative;
   height: 128px;
-  margin-top: 10px;
+  margin: 20px 0;
 }
 
 
 .now-playing img.logo {
-  position:     absolute;
-  width:       300px;
-
-  top: 0;
-  left:0;
+  height:    128px;
+  left:      0;
+  position:  absolute;
+  top:       0;
 }
 
 .now-playing .rightside {
