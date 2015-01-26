@@ -5,6 +5,9 @@ Groupify.controller('MainCtrl', function($scope, $http, $timeout) {
   $scope.queue = [];
   $scope.query = "";
   $scope.trackResults = [];
+  $scope.loggedIn = false;
+  if( document.cookie.indexOf("groupify=") >= 0 )
+    $scope.loggedIn = true;
   backup_avatar = "http://www.140proof.com/images/logos/140-proof-logo-shadow-500px.png";
 
   (function tick() {
