@@ -18,7 +18,6 @@ Groupify.controller('MainCtrl', function($scope, $http, $timeout) {
       if (track && res.data.now_playing.time_remaining) {
         if( ! track.queued_by_avatar )
           track.queued_by_avatar = backup_avatar;
-        console.log( "currently playing queued by avatar: " + track.queued_by_avatar );
         sum = track.time_remaining = parseInt(res.data.now_playing.time_remaining);
         $scope.current_track = track;
       }
@@ -30,7 +29,6 @@ Groupify.controller('MainCtrl', function($scope, $http, $timeout) {
         if( ! track.queued_by_avatar )
           track.queued_by_avatar = backup_avatar;
         sum += parseInt(track.time);
-        console.log( track );
       }
 
       $timeout(tick, 1000);
