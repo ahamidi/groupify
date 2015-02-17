@@ -5,8 +5,6 @@ import (
 	"log"
 	"strconv"
 	"strings"
-
-	"github.com/crowdmob/goamz/sqs"
 )
 
 type NotificationMessage struct {
@@ -15,28 +13,12 @@ type NotificationMessage struct {
 	Track string `json:"track,omitempty"`
 }
 
-func listenOnQueue(q *sqs.Queue, ch chan *sqs.Message) {
-
-	for {
-		resp, err := q.ReceiveMessage(1)
-		if err != nil {
-			log.Panic(err)
-		}
-
-		for _, m := range resp.Messages {
-			ch <- &m
-			q.DeleteMessage(&m)
-		}
-	}
-
-}
-
-func processQueue(ch chan *sqs.Message) {
+func notificationProcessor(ch chan []byte) {
 	for m := range ch {
 
 		n := &NotificationMessage{}
 
-		if err := json.Unmarshal([]byte(m.Body), &n); err != nil {
+		if err := json.Unmarshal(m, &n); err != nil {
 			log.Panic(err)
 		}
 
@@ -83,17 +65,3 @@ func processQueue(ch chan *sqs.Message) {
 	}
 }
 
-func pushMessage(q *sqs.Queue, message interface{}) error {
-
-	j, err := json.Marshal(message)
-	if err != nil {
-		return err
-	}
-
-	_, err = q.SendMessage(string(j))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}

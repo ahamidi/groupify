@@ -2,10 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	//"fmt"
 	"log"
 	"net/http"
-	//"strconv"
 )
 
 type remoteCommand struct {
@@ -47,10 +45,9 @@ func queueTrackRemote(track string) {
 		Param:   track,
 	}
 
-	err := pushMessage(context.sqs, m)
-	if err != nil {
-		log.Panic(err)
-	}
+	jsonM, _ := json.Marshal(m)
+
+	*context.messages <- jsonM
 
 	log.Println("Track Queued: ", track)
 }
@@ -88,15 +85,6 @@ func PostAddTrack(w http.ResponseWriter, r *http.Request) {
 	// Add user details
 	session, _ := store.Get(r, "groupify")
 
-	// Retrieve User Details from DB
-
-	//us := UserSummary{
-	//UserID:    session.Values["github_user"].(string),
-	//AvatarURL: session.Values["avatar_url"].(string),
-	//}
-
-	//log.Println("User Summary: ", us)
-
 	t.QueuedBy = session.Values["github_user"].(string)
 	t.QueuedByAvatar = session.Values["avatar_url"].(string)
 	log.Println("Queueing Track: ", t)
@@ -132,7 +120,6 @@ func GetListTracks(w http.ResponseWriter, r *http.Request) {
 
 // DeleteTrack - Delete a track from the Track Queue
 func PostDeleteTrack(w http.ResponseWriter, r *http.Request) {
-
 	reqData := map[string]string{}
 
 	// Parse JSON Data
@@ -152,7 +139,6 @@ func PostDeleteTrack(w http.ResponseWriter, r *http.Request) {
 
 // SkipTrack - Send next track to remote
 func PostSkipTrack(w http.ResponseWriter, r *http.Request) {
-
 	queueNextTrack()
 	w.Write([]byte(`{"status":"track skipped"}`))
 }
