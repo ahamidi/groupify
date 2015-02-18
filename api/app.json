@@ -1,0 +1,13 @@
+{
+  "name": "Groupify",
+  "description": "The social jukebox for your team, powered by Go!",
+  "repository": "https://github.com/140proof/groupify",
+  "logo": "https://raw.githubusercontent.com/gophergala/teamOFP/master/api/public/images/groupify.go-logo.png",
+  "keywords": ["go", "golang", "spotify", "music"],
+  "env": {
+    "BUILDPACK_URL": "https://github.com/kr/heroku-buildpack-go"
+  },
+  "addons": [
+    "heroku-postgresql"
+  ]
+}
