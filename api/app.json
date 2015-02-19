@@ -5,9 +5,19 @@
   "logo": "https://raw.githubusercontent.com/gophergala/teamOFP/master/api/public/images/groupify.go-logo.png",
   "keywords": ["go", "golang", "spotify", "music"],
   "env": {
-    "BUILDPACK_URL": "https://github.com/kr/heroku-buildpack-go"
+    "BUILDPACK_URL": {
+        "description": "DO NOT EDIT - Needed to deploy Go apps.",
+        "value": "https://github.com/kr/heroku-buildpack-go"
+    },
+    "CLIENT_ID": {
+        "description": "Your Github App Client ID"
+    },
+    "CLIENT_SECRET": {
+        "description": "You Github App Client Secret"
+    }
   },
   "addons": [
     "heroku-postgresql"
   ]
 }
+

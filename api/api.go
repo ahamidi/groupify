@@ -64,7 +64,6 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		// Can't load .env, so setenv defaults
-		os.Setenv("DATABASE_URL", "postgres://localhost:5432/groupify?sslmode=disable")
 	}
 
 	// Setup App Context
