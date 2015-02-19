@@ -14,7 +14,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 	"golang.org/x/oauth2"
 	"log"
 	"net/http"
@@ -64,20 +64,20 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		// Can't load .env, so setenv defaults
-		os.Setenv("SQL_HOST", "localhost:8091")
-		os.Setenv("SQL_USER", "root")
-		os.Setenv("SQL_PASSWORD", "")
-		os.Setenv("SQL_DB", "spotify_remote")
+		os.Setenv("DATABASE_URL", "postgres://localhost:5432/groupify?sslmode=disable")
 	}
 
 	// Setup App Context
 	// Setup DB
-	db, err := sqlx.Open("sqlite3", "./spotify-remote.db")
+	db, err := sqlx.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 	context.db = db
+
+	// Create tables if needed
+	initDB()
 
 	// Setup SQS
 	s, err := sqs.NewFrom(os.Getenv("AWS_ACCESS"), os.Getenv("AWS_SECRET"), "us-east-1")
