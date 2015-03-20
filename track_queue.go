@@ -51,7 +51,11 @@ func (t *TrackQueue) pop() (Track, error) {
 	}
 
 	if track.Id != "" {
-		context.db.Exec("DELETE FROM track_queue WHERE track_id = ?", track.Id)
+		log.Println("Track ID:", track.Id)
+		_, err := context.db.Exec("DELETE FROM track_queue WHERE track_id = $1", track.Id)
+		if err != nil {
+			log.Println("Error:", err)
+		}
 		log.Println("Track popped from track queue: ", track)
 	}
 	return track, nil
@@ -100,5 +104,5 @@ func (t *TrackQueue) length() int {
 
 func (t *TrackQueue) remove(ID string) {
 
-	context.db.Exec("DELETE FROM track_queue WHERE track_id = ?", ID)
+	context.db.Exec("DELETE FROM track_queue WHERE track_id = $1", ID)
 }

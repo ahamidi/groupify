@@ -72,7 +72,7 @@ func createUser(token string) (map[string]string, error) {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	_, err = context.db.NamedExec("INSERT OR REPLACE INTO user_table (user_id, access_token, avatar_url, created_at, updated_at) VALUES (:user_id, :access_token, :avatar_url, :created_at, :updated_at)", &user)
+	_, err = context.db.NamedExec("INSERT INTO user_table (user_id, access_token, avatar_url, created_at, updated_at) VALUES (:user_id, :access_token, :avatar_url, :created_at, :updated_at)", &user)
 
 	//_, err = context.db.Exec(`INSERT INTO user_table (user_id, access_token) VALUES ("aaaa","asdkjasldjas")`)
 

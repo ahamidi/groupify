@@ -34,17 +34,20 @@ func getTrackDetails(ID string) *Track {
 
 	//log.Println("Track Details:", trackDetails)
 	if trackDetails != nil {
-		t.Album = trackDetails["album"].(map[string]interface{})["name"].(string)
-		t.Artist = trackDetails["artists"].([]interface{})[0].(map[string]interface{})["name"].(string)
-		t.Id = ID
-		t.AlbumArt = trackDetails["album"].(map[string]interface{})["images"].([]interface{})[0].(map[string]interface{})["url"].(string)
-		t.Name = trackDetails["name"].(string)
-		duration := trackDetails["duration_ms"].(float64)
-		if err != nil {
-			log.Panic(err)
-		}
+		if trackDetails["album"] != nil {
+			t.Album = trackDetails["album"].(map[string]interface{})["name"].(string)
 
-		t.Time = strconv.Itoa(int(duration) / 1000)
+			t.Artist = trackDetails["artists"].([]interface{})[0].(map[string]interface{})["name"].(string)
+			t.Id = ID
+			t.AlbumArt = trackDetails["album"].(map[string]interface{})["images"].([]interface{})[0].(map[string]interface{})["url"].(string)
+			t.Name = trackDetails["name"].(string)
+			duration := trackDetails["duration_ms"].(float64)
+			if err != nil {
+				log.Panic(err)
+			}
+
+			t.Time = strconv.Itoa(int(duration) / 1000)
+		}
 	}
 	return t
 }
