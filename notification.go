@@ -19,7 +19,8 @@ func notificationProcessor(ch chan []byte) {
 		n := &NotificationMessage{}
 
 		if err := json.Unmarshal(m, &n); err != nil {
-			log.Panic(err)
+			//log.Panic(err)
+			log.Println("Invalid notification message:", string(m))
 		}
 
 		switch n.Event {
@@ -64,4 +65,3 @@ func notificationProcessor(ch chan []byte) {
 		}
 	}
 }
-
