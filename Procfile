@@ -1,2 +1,2 @@
-web: groupify-api
+web: groupify
 
