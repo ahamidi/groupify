@@ -2,11 +2,12 @@ package main
 
 import (
 	"log"
-	"os"
+	//"os"
+	"flag"
 	"os/exec"
 	"strings"
 
-	"github.com/crowdmob/goamz/sqs"
+	//"github.com/crowdmob/goamz/sqs"
 	"github.com/joho/godotenv"
 )
 
@@ -30,6 +31,10 @@ var commands = map[string]string{
 	"position":   "player position",
 }
 
+// API Host Flag
+var apiHost = flag.String("host", "localhost:8080",
+	"Hostname of Groupify API")
+
 func callSpotify(command string, param string) string {
 	fullcmd := ScriptStart + commands[command] + param
 
@@ -41,55 +46,36 @@ func callSpotify(command string, param string) string {
 	return strings.TrimSpace(string(out))
 }
 
-//command line processing
-// func main() {
-//
-// 	var cmd = flag.String("o", "pause", "Enter the command for spotify")
-// 	flag.Parse()
-//
-// 	command := callSpotify(*cmd, "\"spotify:track:7p54iuWHqvdeN224OglZ9t\"")
-//
-// 	if command == "" {
-// 		fmt.Println("exiting...")
-// 	}
-// 	fmt.Println(command)
-// 	out, err := exec.Command("/usr/bin/osascript", "-e", command).Output()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 		log.Fatal(out)
-// 	}
-// done := make(chan bool)
-//
-// fmt.Println(getTimeLeft())
-// go pollSystem()
-// <-done
-// }
-
 func main() {
-	log.Println("Starting sqs processor")
+	log.Println("Starting Groupify Remote")
+
+	flag.Parse()
 
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	c.AWSAccess = os.Getenv("AWS_ACCESS")
-	c.AWSSecret = os.Getenv("AWS_SECRET")
+	// Create host string
+	url := strings.Join([]string{"ws://", *apiHost, "/api/v1/remote"}, "")
+
+	// Create WS Connection
+	c, err := NewWSConnection(url, "http://localhost/")
+
+	// Spotify status queue
+	spotifyState := make(chan interface{})
+	go polling(spotifyState)
+
+	// Create notification message channel
+	notifications := make(chan interface{})
+	go WSMessageReceiver(c, notifications)
+	go processQueue(notifications)
+
+	for s := range spotifyState {
+		log.Println("Spotify State:", s)
+		SendWSMessage(c, s)
+	}
+
 	done := make(chan bool)
-	messageQueue := make(chan *sqs.Message)
-
-	//notification queue
-	s, err := sqs.NewFrom(c.AWSAccess, c.AWSSecret, "us-east-1")
-	if err != nil {
-		log.Panic(err)
-	}
-	q, err := s.GetQueue("spotify-ofp-notification")
-	if err != nil {
-		log.Panic(err)
-	}
-
-	go listenOnQueue("spotify-ofp", messageQueue)
-	go processQueue(messageQueue)
-	go polling(q)
 	<-done
 }

@@ -1,17 +1,17 @@
 package main
 
 import (
-	"log"
+	//"log"
 	"strconv"
 	"time"
 
-	"github.com/crowdmob/goamz/sqs"
+	//"github.com/crowdmob/goamz/sqs"
 )
 
 // polling sleep time
 const sleepTime = time.Second / 2
 
-func polling(queue *sqs.Queue) {
+func polling(s chan interface{}) {
 	playerState := getPlayerState()
 	track := getCurrentTrackID()
 	timeLeft := int(getTimeLeft())
@@ -32,17 +32,21 @@ func polling(queue *sqs.Queue) {
 		// log.Println(currentTrack)
 		if playerState != currentPlayerState {
 			message := NotificationMessage{"player_" + currentPlayerState, "", currentTrack}
-			err := pushMessage(queue, message)
-			if err != nil {
-				log.Println(err)
-			}
+			//err := pushMessage(queue, message)
+			//if err != nil {
+			//log.Println(err)
+			//}
+			s <- message
 			playerState = currentPlayerState
 			// log.Println("player state changed: ", currentPlayerState)
 		}
 		if currentTrack != track {
 			if !getNextSong {
-				pushMessage(queue, NotificationMessage{"track_ending", track, currentTrack})
-				pushMessage(queue, NotificationMessage{"track_start", nextTrack, nextTrack})
+				//pushMessage(queue, NotificationMessage{"track_ending", track, currentTrack})
+				s <- NotificationMessage{"track_ending", track, currentTrack}
+
+				//pushMessage(queue, NotificationMessage{"track_start", nextTrack, nextTrack})
+				s <- NotificationMessage{"track_start", nextTrack, nextTrack}
 				getNextSong = true
 				nextTrack := getNextTrack()
 				if nextTrack != "" {
@@ -59,11 +63,13 @@ func polling(queue *sqs.Queue) {
 			// log.Println("New Time : ", currentTimeLeft)
 			timeLeft = currentTimeLeft
 			message := NotificationMessage{"time_left", strconv.Itoa(timeLeft), currentTrack}
-			pushMessage(queue, message)
+			//pushMessage(queue, message)
+			s <- message
 			if timeLeft < 30 && getNextSong { //lock out period
 				getNextSong = false
 				message := NotificationMessage{"get_next_track", track, currentTrack}
-				pushMessage(queue, message)
+				//pushMessage(queue, message)
+				s <- message
 			}
 		}
 
