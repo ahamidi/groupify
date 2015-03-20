@@ -1,14 +1,10 @@
 package main
 
 import (
-	"log"
-	//"os"
 	"flag"
+	"log"
 	"os/exec"
 	"strings"
-
-	//"github.com/crowdmob/goamz/sqs"
-	"github.com/joho/godotenv"
 )
 
 // start of script tag
@@ -51,16 +47,14 @@ func main() {
 
 	flag.Parse()
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	// Create host string
 	url := strings.Join([]string{"ws://", *apiHost, "/api/v1/remote"}, "")
 
 	// Create WS Connection
 	c, err := NewWSConnection(url, "http://localhost/")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Spotify status queue
 	spotifyState := make(chan interface{})
